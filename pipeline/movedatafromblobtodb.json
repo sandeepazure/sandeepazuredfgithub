@@ -5,7 +5,7 @@
 		"activities": [
 			{
 				"name": "copydatatodb",
-				"description": "This pipeline to load data from Blob to DB.",
+				"description": "This pipeline to load data from Blob to DB. We saving to github.",
 				"type": "Copy",
 				"dependsOn": [],
 				"policy": {
