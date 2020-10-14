@@ -1,0 +1,35 @@
+{
+	"name": "dfavgcomedymovie",
+	"properties": {
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"dataset": {
+						"referenceName": "moviesampledata",
+						"type": "DatasetReference"
+					},
+					"name": "moviesdbds20201010"
+				}
+			],
+			"sinks": [
+				{
+					"dataset": {
+						"referenceName": "movieblobavgratingoutput",
+						"type": "DatasetReference"
+					},
+					"name": "writeoutputtotheblobstorage"
+				}
+			],
+			"transformations": [
+				{
+					"name": "Filtercomedymovies"
+				},
+				{
+					"name": "aggcomedymovie"
+				}
+			],
+			"script": "source(output(\n\t\tmovie as string,\n\t\ttitle as string,\n\t\tgenres as string,\n\t\tyear as string,\n\t\tRating as string,\n\t\t{Rotton Tomato} as string\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tignoreNoFilesFound: false) ~> moviesdbds20201010\nmoviesdbds20201010 filter(toInteger(year) >= 1910 && toInteger(year) <= 2000 && rlike(genres, 'Comedy')) ~> Filtercomedymovies\nFiltercomedymovies aggregate(groupBy(year),\n\tavgcomedyrating = avg(toInteger(Rating))) ~> aggcomedymovie\naggcomedymovie sink(allowSchemaDrift: true,\n\tvalidateSchema: false,\n\tpartitionFileNames:['avgcomedymovierating'],\n\tpartitionBy('hash', 1),\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true) ~> writeoutputtotheblobstorage"
+		}
+	}
+}

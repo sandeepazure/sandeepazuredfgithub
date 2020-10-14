@@ -1,0 +1,39 @@
+{
+	"name": "dfjoinmultiplefiles",
+	"properties": {
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"dataset": {
+						"referenceName": "salesdata",
+						"type": "DatasetReference"
+					},
+					"name": "salescsvmergeds"
+				},
+				{
+					"dataset": {
+						"referenceName": "salescatdata",
+						"type": "DatasetReference"
+					},
+					"name": "salescatdata"
+				}
+			],
+			"sinks": [
+				{
+					"dataset": {
+						"referenceName": "Joinedthemultipleoutput",
+						"type": "DatasetReference"
+					},
+					"name": "joindatatofile"
+				}
+			],
+			"transformations": [
+				{
+					"name": "multiplefilesjoining"
+				}
+			],
+			"script": "source(output(\n\t\tProductID as string,\n\t\tName as string,\n\t\tProductNumber as string,\n\t\tColor as string,\n\t\tStandardCost as string,\n\t\tListPrice as string,\n\t\tSize as string,\n\t\tWeight as string,\n\t\tProductCategoryID as string,\n\t\tProductModelID as string,\n\t\tSellStartDate as string,\n\t\tSellEndDate as string,\n\t\tModifiedDate as string\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tignoreNoFilesFound: false) ~> salescsvmergeds\nsource(output(\n\t\tProductCategoryID as string,\n\t\tParentProductCategoryID as string,\n\t\tName as string\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tignoreNoFilesFound: false) ~> salescatdata\nsalescsvmergeds, salescatdata join(salescsvmergeds@ProductCategoryID == salescatdata@ProductCategoryID,\n\tjoinType:'inner',\n\tbroadcast: 'auto')~> multiplefilesjoining\nmultiplefilesjoining sink(input(\n\t\tProductID as string,\n\t\tName as string,\n\t\tProductNumber as string,\n\t\tColor as string,\n\t\tStandardCost as string,\n\t\tListPrice as string,\n\t\tSize as string,\n\t\tWeight as string,\n\t\tProductCategoryID as string,\n\t\tProductModelID as string,\n\t\tSellStartDate as string,\n\t\tSellEndDate as string,\n\t\tModifiedDate as string\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tpartitionFileNames:['mergeddata'],\n\tmapColumn(\n\t\tProductID,\n\t\tName = {salescsvmergeds@Name},\n\t\tProductNumber,\n\t\tColor,\n\t\tStandardCost,\n\t\tListPrice,\n\t\tSize,\n\t\tWeight,\n\t\tProductCategoryID = {salescatdata@ProductCategoryID},\n\t\tProductModelID,\n\t\tSellStartDate,\n\t\tSellEndDate,\n\t\tModifiedDate\n\t),\n\tpartitionBy('hash', 1),\n\tskipDuplicateMapOutputs: true) ~> joindatatofile"
+		}
+	}
+}

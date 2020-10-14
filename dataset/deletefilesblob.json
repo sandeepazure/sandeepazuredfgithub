@@ -1,0 +1,19 @@
+{
+	"name": "deletefilesblob",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "az_sourceblobconnection",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "Binary",
+		"typeProperties": {
+			"location": {
+				"type": "AzureBlobStorageLocation",
+				"fileName": "mergeddata",
+				"container": "salescontainer"
+			}
+		}
+	},
+	"type": "Microsoft.DataFactory/factories/datasets"
+}

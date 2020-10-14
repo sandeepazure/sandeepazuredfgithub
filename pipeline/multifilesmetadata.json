@@ -1,0 +1,132 @@
+{
+	"name": "multifilesmetadata",
+	"properties": {
+		"activities": [
+			{
+				"name": "retrievemetadataformultifiles",
+				"type": "GetMetadata",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "7.00:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"dataset": {
+						"referenceName": "azsourceblobds",
+						"type": "DatasetReference"
+					},
+					"fieldList": [
+						"childItems",
+						"itemName",
+						"itemType",
+						"lastModified"
+					],
+					"storeSettings": {
+						"type": "AzureBlobStorageReadSettings",
+						"recursive": true
+					},
+					"formatSettings": {
+						"type": "DelimitedTextReadSettings"
+					}
+				}
+			},
+			{
+				"name": "fileterrelatedsales",
+				"type": "Filter",
+				"dependsOn": [
+					{
+						"activity": "retrievemetadataformultifiles",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"userProperties": [],
+				"typeProperties": {
+					"items": {
+						"value": "@activity('retrievemetadataformultifiles').output.childItems",
+						"type": "Expression"
+					},
+					"condition": {
+						"value": "@startswith(item().name ,'Sales')",
+						"type": "Expression"
+					}
+				}
+			},
+			{
+				"name": "Iteratemultiplefilestostorethedata",
+				"type": "ForEach",
+				"dependsOn": [
+					{
+						"activity": "fileterrelatedsales",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"userProperties": [],
+				"typeProperties": {
+					"items": {
+						"value": "@activity('fileterrelatedsales').output.Value",
+						"type": "Expression"
+					},
+					"activities": [
+						{
+							"name": "storemultiplefilesmetadata",
+							"type": "SqlServerStoredProcedure",
+							"dependsOn": [],
+							"policy": {
+								"timeout": "7.00:00:00",
+								"retry": 0,
+								"retryIntervalInSeconds": 30,
+								"secureOutput": false,
+								"secureInput": false
+							},
+							"userProperties": [],
+							"typeProperties": {
+								"storedProcedureName": "[dbo].[STORE_FILEMETADATA]",
+								"storedProcedureParameters": {
+									"FileName": {
+										"value": {
+											"value": "@{item().name}",
+											"type": "Expression"
+										},
+										"type": "String"
+									},
+									"LastModifiedDate": {
+										"value": {
+											"value": "@utcnow()",
+											"type": "Expression"
+										},
+										"type": "String"
+									},
+									"RecInsertDate": {
+										"value": {
+											"value": "@convertFromUtc(utcnow(),'Pacific Standard Time')",
+											"type": "Expression"
+										},
+										"type": "String"
+									}
+								}
+							},
+							"linkedServiceName": {
+								"referenceName": "az_sqldb_20201007",
+								"type": "LinkedServiceReference"
+							}
+						}
+					]
+				}
+			}
+		],
+		"folder": {
+			"name": "storemetadataformultiplefiles"
+		},
+		"annotations": [],
+		"lastPublishTime": "2020-10-13T02:46:46Z"
+	},
+	"type": "Microsoft.DataFactory/factories/pipelines"
+}
