@@ -1,0 +1,12 @@
+{
+	"name": "getdbtables",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "az_sqldb_20201007",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "AzureSqlTable",
+		"schema": []
+	}
+}
