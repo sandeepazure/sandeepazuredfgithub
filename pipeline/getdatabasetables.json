@@ -110,7 +110,7 @@
 							"userProperties": [],
 							"typeProperties": {
 								"expression": {
-									"value": "@contains( item().Table_Name,'Customer’)",
+									"value": "@contains(item().Table_Name,'Customer')",
 									"type": "Expression"
 								},
 								"ifTrueActivities": [
