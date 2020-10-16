@@ -1,0 +1,36 @@
+{
+	"$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentParameters.json#",
+	"contentVersion": "1.0.0.0",
+	"parameters": {
+		"factoryName": {
+			"value": "sandeepdatafactorydemo"
+		},
+		"AzureBlobStorage2020_10_08_connectionString": {
+			"value": ""
+		},
+		"az_destinationdbconnection_connectionString": {
+			"value": ""
+		},
+		"az_dfblob_20201007_connectionString": {
+			"value": ""
+		},
+		"az_sourceblobconnection_connectionString": {
+			"value": ""
+		},
+		"az_sqldb_20201007_connectionString": {
+			"value": ""
+		},
+		"azuredestinationdb_connectionString": {
+			"value": ""
+		},
+		"moviedbls_connectionString": {
+			"value": ""
+		},
+		"containerUri": {
+			"value": ""
+		},
+		"containerSasToken": {
+			"value": ""
+		}
+	}
+}
